@@ -1,52 +1,57 @@
-You are writing a Devvit web application that will be executed on Reddit.com.
+Estás escribiendo una aplicación web de Devvit que se ejecutará en reddit.com.
 
-## Tech Stack
+## Stack tecnológico
 
-- **Frontend**: React 19, Tailwind CSS 4, Vite
-- **Backend**: Node.js v22 serverless environment (Devvit), Hono, TRPC
-- **Communication**: tRPC v11 for end-to-end type safety
+- **Frontend**: React 19, Vite
+- **Backend**: entorno serverless de Node.js >= 24 (Devvit Web), Hono
+- **Comunicación**: fetch relativo a `/api` (`POST /api/game`), con tipado de extremo a extremo a través de `src/shared/game.ts`
 
-## Layout & Architecture
+## Layout y arquitectura
 
-- `/src/server`: **Backend Code**. This runs in a secure, serverless environment.
-  - `trpc.ts`: Defines the API router and procedures.
-  - `index.ts`: Main server entry point (Hono app).
-  - Access `redis`, `reddit`, and `context` here via `@devvit/web/server`.
-- `/src/client`: **Frontend Code**. This is executed inside of an iFrame on reddit.com
-  - To add an entrypoint, create a HTML file and add to the mapping inside of `devvit.json`
+- `/src/server`: **Código de backend**. Se ejecuta en un entorno seguro y serverless.
+  - `routes/api.ts`: enrutador de la API del juego (`GET_STATUS`, `NEW_GAME`, `SUBMIT_GUESS`, `REVEAL_LETTER`).
+  - `routes/triggers.ts`: disparador `onAppInstall` que crea el post inicial.
+  - `core/post.ts`: creación del post de Devvit.
+  - `data/words.json`: repositorio local de palabras `{ word, categoria }`.
+  - `index.ts`: punto de entrada principal del servidor (aplicación Hono).
+  - Accede a `redis`, `reddit` y `context` aquí mediante `@devvit/web/server`.
+- `/src/client`: **Código de frontend**. Se ejecuta dentro de un iframe en reddit.com.
+  - Para añadir un entrypoint, crea un archivo HTML y agrégale el mapeo en `devvit.json`.
   - Entrypoints:
-    - `game.html`: The main React entry point (Expanded View).
-    - `splash.html`: The initial React entry point (Inline View). This will be shown in the reddit.com feed. Please keep it fast and keep heavy dependencies inside of `game.html`
-- `/src/shared`: **Shared Code**. Code to share between the client and server
+    - `game.html`: el entrypoint principal de React (vista expandida).
+    - `splash.html`: el entrypoint inicial de React (vista inline). Se muestra en el feed de reddit.com. Manténlo rápido y deja las dependencias pesadas dentro de `game.html`.
+- `/src/shared`: **Código compartido**. Código para compartir entre el cliente y el servidor.
 
 ## Frontend
 
-### Rules
+### Reglas
 
-- Instead of `window.location` or `window.assign`, use `navigateTo` from `@devvit/web/client`
+- En lugar de `window.location` o `window.assign`, usa `navigateTo` de `@devvit/web/client`
 
-### Limitations
+### Limitaciones
 
-- `window.alert`: Use `showToast` or `showForm` from `@devvit/web/client`
-- File downloads: Use clipboard API with `showToast` to confirm
-- Geolocation, camera, microphone, and notifications web APIs: No alternatives
-- Inline script tags inside of `html` files: Use a script tag and separate js/ts file
+- `window.alert`: usa `showToast` o `showForm` de `@devvit/web/client`
+- Descargas de archivos: usa la API de portapapeles con `showToast` para confirmar
+- APIs web de geolocalización, cámara, micrófono y notificaciones: no hay alternativas
+- Etiquetas de script inline dentro de archivos `html`: usa una etiqueta `<script>` y un archivo js/ts aparte
 
-## Commands
+## Comandos
 
-- `npm run type-check`: Check typescript types
-- `npm run lint`: Check the linter
-- `npm run test -- my-file-name`: Run tests isolated to a file
+- `npm run test:types`: comprueba los tipos de TypeScript
+- `npm run lint`: ejecuta el linter
+- `npm run build`: compila los proyectos de cliente y servidor
+- `npm run words`: regenera el repositorio de palabras temáticas
+- `npm run dev`: servidor de desarrollo en vivo dentro de Reddit
 
-## Code Style
+## Estilo de código
 
-- Prefer type aliases over interfaces when writing typescript
-- Prefer named exports over default exports
-- Never cast typescript types
+- Prefiere alias de tipo (`type`) sobre `interface` al escribir TypeScript
+- Prefiere exportaciones con nombre sobre exportaciones por defecto
+- Nunca hagas casts de tipos de TypeScript
 
-## Global Rules
+## Reglas globales
 
-- You may find code that references blocks or `@devvit/public-api` while building a feature. Do NOT use this code as this project is configured to use Devvit web only.
-- Whenever you add an endpoint for a new menu item action, ensure that you've added the corresponding mapping to `devvit.json` so that it is properly registered
+- Puede que encuentres código que haga referencia a bloques o a `@devvit/public-api` al construir una función. NO uses ese código: este proyecto está configurado únicamente con Devvit web.
+- Cada vez que añadas un endpoint accesible desde reddit.com (menús, formularios, disparadores o entrypoints), asegúrate de haber añadido el mapeo correspondiente en `devvit.json` para que quede registrado correctamente
 
 Docs: https://developers.reddit.com/docs/llms.txt.
