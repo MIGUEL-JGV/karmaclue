@@ -131,13 +131,16 @@ const GAME_CSS = `
     80% { transform: translateY(0) rotate(0deg); }
   }
   /* --- Zorro caminante de cuerpo completo --- */
-  @keyframes kcl-fox-travel {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(calc(100vw - 100px)); }
+  @keyframes kcl-fox-cross {
+    0% { transform: translateX(0) scaleX(-1); }
+    46% { transform: translateX(calc(100vw - 100px)) scaleX(-1); }
+    50% { transform: translateX(calc(100vw - 100px)) scaleX(1); }
+    96% { transform: translateX(0) scaleX(1); }
+    100% { transform: translateX(0) scaleX(-1); }
   }
-  @keyframes kcl-fox-facings {
-    0%, 49% { transform: scaleX(1); }
-    50%, 100% { transform: scaleX(-1); }
+  @keyframes kcl-fox-slide {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(calc(100vw - 100px)); }
   }
   @keyframes kcl-fox-bob {
     0%, 100% { transform: translateY(0) rotate(0deg); }
@@ -169,12 +172,18 @@ const GAME_CSS = `
     animation-play-state: paused !important;
   }
   .kcl-fox-travel {
-    position: relative;
+    position: absolute;
+    left: 0;
+    bottom: 0;
     width: 96px;
-    animation: kcl-fox-travel 22s linear infinite alternate;
+    animation: kcl-fox-cross 44s linear infinite;
   }
-  .kcl-fox-facer {
-    animation: kcl-fox-facings 22s linear infinite;
+  .kcl-fox-slide {
+    position: absolute;
+    left: 0;
+    bottom: 84px;
+    height: 0;
+    animation: kcl-fox-slide 44s linear infinite;
   }
   .kcl-fox2 {
     position: relative;
@@ -188,12 +197,12 @@ const GAME_CSS = `
   .kcl-fox2--wobble { animation: kcl-fox-wobble 0.6s ease-in-out infinite; }
   .kcl-fox2-head {
     position: absolute;
-    left: 26px;
-    top: 2px;
+    left: 24px;
+    top: 6px;
     width: 36px;
     height: 32px;
     background: #f29a38;
-    border-radius: 50% 50% 42% 42%;
+    border-radius: 50% 50% 45% 45%;
     z-index: 3;
   }
   .kcl-fox2-ear {
@@ -248,27 +257,27 @@ const GAME_CSS = `
   .kcl-fox2-body {
     position: absolute;
     left: 0;
-    bottom: 8px;
-    width: 66px;
-    height: 36px;
+    bottom: 6px;
+    width: 72px;
+    height: 38px;
     background: #f29a38;
     border-radius: 15px 15px 10px 10px;
     z-index: 1;
   }
   .kcl-fox2-belly {
     position: absolute;
-    left: 12px;
-    bottom: 8px;
-    width: 30px;
-    height: 16px;
+    left: 14px;
+    bottom: 6px;
+    width: 32px;
+    height: 18px;
     background: #fff3df;
     border-radius: 8px 8px 6px 6px;
   }
   .kcl-fox2-tail {
     position: absolute;
-    right: -30px;
-    bottom: 10px;
-    width: 32px;
+    right: -34px;
+    bottom: 12px;
+    width: 34px;
     height: 13px;
     background: #f29a38;
     border-radius: 10px;
@@ -289,21 +298,21 @@ const GAME_CSS = `
   .kcl-fox2-leg {
     position: absolute;
     bottom: 0;
-    width: 9px;
+    width: 10px;
     height: 18px;
     background: #e07f1f;
     border-radius: 4px;
     transform-origin: top center;
     z-index: 2;
   }
-  .kcl-fox2-leg--fl { left: 12px; animation: kcl-fox-leg-swing 0.5s ease-in-out infinite; }
-  .kcl-fox2-leg--bl { left: 24px; animation: kcl-fox-leg-swing 0.5s ease-in-out infinite; animation-delay: -0.25s; }
-  .kcl-fox2-leg--fr { left: 42px; animation: kcl-fox-leg-swing 0.5s ease-in-out infinite; animation-delay: -0.25s; }
-  .kcl-fox2-leg--br { left: 54px; animation: kcl-fox-leg-swing 0.5s ease-in-out infinite; }
+  .kcl-fox2-leg--fl { left: 2px; animation: kcl-fox-leg-swing 0.5s ease-in-out infinite; }
+  .kcl-fox2-leg--bl { left: 16px; animation: kcl-fox-leg-swing 0.5s ease-in-out infinite; animation-delay: -0.25s; }
+  .kcl-fox2-leg--fr { left: 44px; animation: kcl-fox-leg-swing 0.5s ease-in-out infinite; animation-delay: -0.25s; }
+  .kcl-fox2-leg--br { left: 59px; animation: kcl-fox-leg-swing 0.5s ease-in-out infinite; }
   .kcl-fox-bubble {
     position: absolute;
-    bottom: calc(100% + 6px);
-    left: 0;
+    bottom: -2px;
+    left: 32px;
     background: #ffffff;
     border: 2px solid #1a1a1b;
     border-radius: 12px;
@@ -479,36 +488,36 @@ function FoxMascot({ mood, foxKey, muted }: { mood: FoxMood; foxKey: number; mut
   return (
     <div className={rootClass} aria-hidden="true">
       <div className="kcl-fox-travel kcl-fox-anim">
-        <div className="kcl-fox-facer kcl-fox-anim">
-          <div
-            className={reacting ? `kcl-fox2 ${look.reactClass}` : 'kcl-fox2 kcl-fox-anim'}
-            key={reacting ? foxKey : 'walk'}
-          >
-            <div className="kcl-fox2-head">
-              <span className="kcl-fox2-ear kcl-fox2-ear--l" />
-              <span className="kcl-fox2-ear kcl-fox2-ear--r" />
-              <span className="kcl-fox2-eye kcl-fox2-eye--l" />
-              <span className="kcl-fox2-eye kcl-fox2-eye--r" />
-              <span className="kcl-fox2-snout" />
-              {look.extra === 'stars' && <span className="kcl-fox-stars">✨</span>}
-              {look.extra === 'tears' && <span className="kcl-fox-tears">💧</span>}
-            </div>
-            <div className="kcl-fox2-body">
-              <span className="kcl-fox2-belly" />
-              <span className="kcl-fox2-tail kcl-fox-anim" />
-            </div>
-            <span className="kcl-fox2-leg kcl-fox2-leg--fl kcl-fox-anim" />
-            <span className="kcl-fox2-leg kcl-fox2-leg--bl kcl-fox-anim" />
-            <span className="kcl-fox2-leg kcl-fox2-leg--fr kcl-fox-anim" />
-            <span className="kcl-fox2-leg kcl-fox2-leg--br kcl-fox-anim" />
+        <div
+          className={reacting ? `kcl-fox2 ${look.reactClass}` : 'kcl-fox2 kcl-fox-anim'}
+          key={reacting ? foxKey : 'walk'}
+        >
+          <div className="kcl-fox2-head">
+            <span className="kcl-fox2-ear kcl-fox2-ear--l" />
+            <span className="kcl-fox2-ear kcl-fox2-ear--r" />
+            <span className="kcl-fox2-eye kcl-fox2-eye--l" />
+            <span className="kcl-fox2-eye kcl-fox2-eye--r" />
+            <span className="kcl-fox2-snout" />
+            {look.extra === 'stars' && <span className="kcl-fox-stars">✨</span>}
+            {look.extra === 'tears' && <span className="kcl-fox-tears">💧</span>}
           </div>
+          <div className="kcl-fox2-body">
+            <span className="kcl-fox2-belly" />
+            <span className="kcl-fox2-tail kcl-fox-anim" />
+          </div>
+          <span className="kcl-fox2-leg kcl-fox2-leg--fl kcl-fox-anim" />
+          <span className="kcl-fox2-leg kcl-fox2-leg--bl kcl-fox-anim" />
+          <span className="kcl-fox2-leg kcl-fox2-leg--fr kcl-fox-anim" />
+          <span className="kcl-fox2-leg kcl-fox2-leg--br kcl-fox-anim" />
         </div>
-        {look.bubble && (
+      </div>
+      {look.bubble && (
+        <div className="kcl-fox-slide kcl-fox-anim">
           <div className="kcl-fox-bubble">
             {mood === 'thinking' ? <ThinkingDots /> : look.bubble}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
