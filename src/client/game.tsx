@@ -78,10 +78,6 @@ const GAME_CSS = `
   }
 
   /* --- Sistema cartoon: mascota 🦊 + bocadillos + efectos cómicos --- */
-  @keyframes kcl-fox-idle {
-    0%, 100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-4px) scale(1.03); }
-  }
   @keyframes kcl-fox-jump {
     0% { transform: translateY(0) scale(1, 1); }
     15% { transform: translateY(0) scale(1.08, 0.92); }
@@ -134,24 +130,176 @@ const GAME_CSS = `
     60% { transform: translateY(-6px) rotate(6deg); }
     80% { transform: translateY(0) rotate(0deg); }
   }
-  .kcl-fox { position: fixed; bottom: 14px; left: 14px; z-index: 25; pointer-events: none; }
-  .kcl-fox-body {
-    font-size: 56px;
-    line-height: 1;
-    animation: kcl-fox-idle 3.2s ease-in-out infinite;
-    transform-origin: 50% 85%;
+  /* --- Zorro caminante de cuerpo completo --- */
+  @keyframes kcl-fox-travel {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(100vw - 100px)); }
   }
-  .kcl-fox-body--jump { animation: kcl-fox-jump 0.9s cubic-bezier(0.34, 1.56, 0.64, 1); }
-  .kcl-fox-body--party { animation: kcl-fox-jump 0.9s ease-in-out infinite; }
-  .kcl-fox-body--tremble { animation: kcl-fox-tremble 0.45s ease-in-out; }
-  .kcl-fox-body--wobble { animation: kcl-fox-wobble 0.6s ease-in-out infinite; }
-  .kcl-fox-ground {
-    width: 44px;
+  @keyframes kcl-fox-facings {
+    0%, 49% { transform: scaleX(1); }
+    50%, 100% { transform: scaleX(-1); }
+  }
+  @keyframes kcl-fox-bob {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-3px) rotate(2deg); }
+  }
+  @keyframes kcl-fox-leg-swing {
+    0%, 100% { transform: rotate(18deg); }
+    50% { transform: rotate(-18deg); }
+  }
+  @keyframes kcl-fox-tail-wave {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(26deg); }
+  }
+  .kcl-fox2-root {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 96px;
+    z-index: 25;
+    pointer-events: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  .kcl-fox2-root--muted {
+    transform: translateY(24px) scale(0.6);
+    opacity: 0.7;
+  }
+  .kcl-fox2-root--paused .kcl-fox-anim {
+    animation-play-state: paused !important;
+  }
+  .kcl-fox-travel {
+    position: relative;
+    width: 96px;
+    animation: kcl-fox-travel 22s linear infinite alternate;
+  }
+  .kcl-fox-facer {
+    animation: kcl-fox-facings 22s linear infinite;
+  }
+  .kcl-fox2 {
+    position: relative;
+    width: 96px;
+    height: 84px;
+    animation: kcl-fox-bob 0.5s ease-in-out infinite;
+  }
+  .kcl-fox2--jump { animation: kcl-fox-jump 0.9s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .kcl-fox2--party { animation: kcl-fox-jump 0.9s ease-in-out infinite; }
+  .kcl-fox2--tremble { animation: kcl-fox-tremble 0.45s ease-in-out; }
+  .kcl-fox2--wobble { animation: kcl-fox-wobble 0.6s ease-in-out infinite; }
+  .kcl-fox2-head {
+    position: absolute;
+    left: 26px;
+    top: 2px;
+    width: 36px;
+    height: 32px;
+    background: #f29a38;
+    border-radius: 50% 50% 42% 42%;
+    z-index: 3;
+  }
+  .kcl-fox2-ear {
+    position: absolute;
+    top: -9px;
+    width: 13px;
+    height: 15px;
+    background: #f29a38;
+    border-radius: 50% 0 50% 0;
+  }
+  .kcl-fox2-ear--l { left: 2px; transform: rotate(-8deg); }
+  .kcl-fox2-ear--r { right: 2px; transform: scaleX(-1) rotate(-8deg); }
+  .kcl-fox2-ear::after {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 7px;
     height: 8px;
-    margin: -2px auto 0;
-    background: radial-gradient(ellipse, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0) 70%);
+    background: #3a2412;
+    border-radius: 50% 0 50% 0;
+  }
+  .kcl-fox2-eye {
+    position: absolute;
+    top: 13px;
+    width: 4px;
+    height: 5px;
+    background: #2b1b12;
     border-radius: 50%;
   }
+  .kcl-fox2-eye--l { left: 9px; }
+  .kcl-fox2-eye--r { right: 9px; }
+  .kcl-fox2-snout {
+    position: absolute;
+    left: 9px;
+    bottom: -2px;
+    width: 18px;
+    height: 12px;
+    background: #fff3df;
+    border-radius: 0 0 9px 9px;
+  }
+  .kcl-fox2-snout::after {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 1px;
+    width: 4px;
+    height: 4px;
+    background: #2b1b12;
+    border-radius: 50%;
+  }
+  .kcl-fox2-body {
+    position: absolute;
+    left: 0;
+    bottom: 8px;
+    width: 66px;
+    height: 36px;
+    background: #f29a38;
+    border-radius: 15px 15px 10px 10px;
+    z-index: 1;
+  }
+  .kcl-fox2-belly {
+    position: absolute;
+    left: 12px;
+    bottom: 8px;
+    width: 30px;
+    height: 16px;
+    background: #fff3df;
+    border-radius: 8px 8px 6px 6px;
+  }
+  .kcl-fox2-tail {
+    position: absolute;
+    right: -30px;
+    bottom: 10px;
+    width: 32px;
+    height: 13px;
+    background: #f29a38;
+    border-radius: 10px;
+    transform-origin: left center;
+    animation: kcl-fox-tail-wave 0.5s ease-in-out infinite;
+    z-index: 0;
+  }
+  .kcl-fox2-tail::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 13px;
+    height: 13px;
+    background: #ffffff;
+    border-radius: 50%;
+  }
+  .kcl-fox2-leg {
+    position: absolute;
+    bottom: 0;
+    width: 9px;
+    height: 18px;
+    background: #e07f1f;
+    border-radius: 4px;
+    transform-origin: top center;
+    z-index: 2;
+  }
+  .kcl-fox2-leg--fl { left: 12px; animation: kcl-fox-leg-swing 0.5s ease-in-out infinite; }
+  .kcl-fox2-leg--bl { left: 24px; animation: kcl-fox-leg-swing 0.5s ease-in-out infinite; animation-delay: -0.25s; }
+  .kcl-fox2-leg--fr { left: 42px; animation: kcl-fox-leg-swing 0.5s ease-in-out infinite; animation-delay: -0.25s; }
+  .kcl-fox2-leg--br { left: 54px; animation: kcl-fox-leg-swing 0.5s ease-in-out infinite; }
   .kcl-fox-bubble {
     position: absolute;
     bottom: calc(100% + 6px);
@@ -281,21 +429,21 @@ type FoxMood =
   | 'cry';
 
 type FoxLook = {
-  bodyClass: string;
+  reactClass: string;
   bubble: string | null;
   extra?: 'stars' | 'tears';
 };
 
 const FOX_LOOKS: Record<FoxMood, FoxLook> = {
-  idle: { bodyClass: 'kcl-fox-body', bubble: null },
-  thinking: { bodyClass: 'kcl-fox-body', bubble: '···' },
-  happy: { bodyClass: 'kcl-fox-body--jump', bubble: '¡Genial!' },
-  surprised: { bodyClass: 'kcl-fox-body--tremble', bubble: '¿¿Cómo??' },
-  tease: { bodyClass: 'kcl-fox-body--wobble', bubble: '¡Casi!' },
-  mad: { bodyClass: 'kcl-fox-body--tremble', bubble: '¡Jsjs!' },
-  sparkle: { bodyClass: 'kcl-fox-body--jump', bubble: '✨ ¡Toma!', extra: 'stars' },
-  party: { bodyClass: 'kcl-fox-body--party', bubble: '¡¡WAZA!!' },
-  cry: { bodyClass: 'kcl-fox-body--wobble', bubble: '¡Oh no!', extra: 'tears' },
+  idle: { reactClass: '', bubble: null },
+  thinking: { reactClass: '', bubble: '···' },
+  happy: { reactClass: 'kcl-fox2--jump', bubble: '¡Genial!' },
+  surprised: { reactClass: 'kcl-fox2--tremble', bubble: '¿¿Cómo??' },
+  tease: { reactClass: 'kcl-fox2--wobble', bubble: '¡Casi!' },
+  mad: { reactClass: 'kcl-fox2--tremble', bubble: '¡Jsjs!' },
+  sparkle: { reactClass: 'kcl-fox2--jump', bubble: '✨ ¡Toma!', extra: 'stars' },
+  party: { reactClass: 'kcl-fox2--party', bubble: '¡¡WAZA!!' },
+  cry: { reactClass: 'kcl-fox2--wobble', bubble: '¡Oh no!', extra: 'tears' },
 };
 
 type Burst = {
@@ -316,23 +464,51 @@ function ThinkingDots() {
   );
 }
 
-function FoxMascot({ mood, foxKey }: { mood: FoxMood; foxKey: number }) {
+function FoxMascot({ mood, foxKey, muted }: { mood: FoxMood; foxKey: number; muted: boolean }) {
   const look = FOX_LOOKS[mood];
+  const reacting = mood !== 'idle';
+
+  const rootClass = [
+    'kcl-fox2-root',
+    muted || reacting ? 'kcl-fox2-root--paused' : '',
+    muted ? 'kcl-fox2-root--muted' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <div key={foxKey} className="kcl-fox" aria-hidden="true">
-      {look.bubble && (
-        <div className="kcl-fox-bubble">
-          {mood === 'thinking' ? <ThinkingDots /> : look.bubble}
+    <div className={rootClass} aria-hidden="true">
+      <div className="kcl-fox-travel kcl-fox-anim">
+        <div className="kcl-fox-facer kcl-fox-anim">
+          <div
+            className={reacting ? `kcl-fox2 ${look.reactClass}` : 'kcl-fox2 kcl-fox-anim'}
+            key={reacting ? foxKey : 'walk'}
+          >
+            <div className="kcl-fox2-head">
+              <span className="kcl-fox2-ear kcl-fox2-ear--l" />
+              <span className="kcl-fox2-ear kcl-fox2-ear--r" />
+              <span className="kcl-fox2-eye kcl-fox2-eye--l" />
+              <span className="kcl-fox2-eye kcl-fox2-eye--r" />
+              <span className="kcl-fox2-snout" />
+              {look.extra === 'stars' && <span className="kcl-fox-stars">✨</span>}
+              {look.extra === 'tears' && <span className="kcl-fox-tears">💧</span>}
+            </div>
+            <div className="kcl-fox2-body">
+              <span className="kcl-fox2-belly" />
+              <span className="kcl-fox2-tail kcl-fox-anim" />
+            </div>
+            <span className="kcl-fox2-leg kcl-fox2-leg--fl kcl-fox-anim" />
+            <span className="kcl-fox2-leg kcl-fox2-leg--bl kcl-fox-anim" />
+            <span className="kcl-fox2-leg kcl-fox2-leg--fr kcl-fox-anim" />
+            <span className="kcl-fox2-leg kcl-fox2-leg--br kcl-fox-anim" />
+          </div>
         </div>
-      )}
-      <div className={look.bodyClass}>
-        <span style={{ position: 'relative', display: 'inline-block' }}>
-          {look.extra === 'stars' && <div className="kcl-fox-stars">✨</div>}
-          {look.extra === 'tears' && <div className="kcl-fox-tears">💧</div>}
-          🦊
-        </span>
+        {look.bubble && (
+          <div className="kcl-fox-bubble">
+            {mood === 'thinking' ? <ThinkingDots /> : look.bubble}
+          </div>
+        )}
       </div>
-      <div className="kcl-fox-ground" />
     </div>
   );
 }
@@ -392,6 +568,7 @@ export function KarmaClueGame() {
   const [foxMood, setFoxMood] = useState<FoxMood>('idle');
   const [foxKey, setFoxKey] = useState(0);
   const [bursts, setBursts] = useState<Burst[]>([]);
+  const [inputFocused, setInputFocused] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const burstSeqRef = useRef(0);
@@ -614,7 +791,7 @@ export function KarmaClueGame() {
       ))}
 
       {/* Mascota caricatura reactiva */}
-      <FoxMascot mood={foxMood} foxKey={foxKey} />
+      <FoxMascot mood={foxMood} foxKey={foxKey} muted={inputFocused} />
 
       {/* Encabezado */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #EDEFF1', paddingBottom: '10px' }}>
@@ -757,6 +934,8 @@ export function KarmaClueGame() {
             placeholder="Escribe aquí..."
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
+            onFocus={() => setInputFocused(true)}
+            onBlur={() => setInputFocused(false)}
             style={{ flex: 1, padding: '10px 14px', border: '1px solid #CCC', borderRadius: '20px', outline: 'none', fontSize: '14px' }}
           />
           <button
