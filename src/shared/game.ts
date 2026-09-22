@@ -12,6 +12,18 @@ export type RevealedLetter = {
   letter: string;
 };
 
+export type LetterStatus = 'correct' | 'present' | 'absent';
+
+export type LetterEval = {
+  letter: string;
+  status: LetterStatus;
+};
+
+export type GameAttempt = {
+  word: string;
+  letters: LetterEval[];
+};
+
 export type DailyConcept = {
   concept: string;
   category: string;
@@ -22,7 +34,7 @@ export type GameResponse = {
   success: boolean;
   category: string;
   hint: string;
-  attempts: string[];
+  attempts: GameAttempt[];
   gameStatus: GameStatus;
   concept: string | null;
   gamesPlayed: number;

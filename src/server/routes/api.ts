@@ -4,9 +4,11 @@ import { context, redis } from '@devvit/web/server';
 import words from '../data/words.json';
 import type {
   DailyConcept,
+  GameAttempt,
   GameRequest,
   GameResponse,
   GameStatus,
+  LetterEval,
   RevealedLetter,
 } from '../../shared/game';
 
@@ -68,12 +70,51 @@ function pickWord(previousIndex?: number): PickedWord {
   return { ...wordAt(index), wordIndex: index };
 }
 
+// Evalúa letra por letra un intento contra el concepto (reglas Wordle):
+// - 'correct': la letra coincide en esa posición
+// - 'present': está en la palabra pero en otra posición
+// - 'absent':  no está en la palabra (o ya se agotaron todas sus apariciones)
+function evaluateGuess(guess: string, concept: string): LetterEval[] {
+  const letters: LetterEval[] = guess.split('').map((letter, i) => ({
+    letter,
+    status: letter === concept[i] ? 'correct' : 'absent',
+  }));
+
+  // Letras sobrantes del concepto que aún no se han colocado correctamente
+  const remaining = new Map<string, number>();
+  for (let i = 0; i < concept.length; i += 1) {
+    const letter = concept[i];
+    if (letter && letter !== guess[i]) {
+      remaining.set(letter, (remaining.get(letter) ?? 0) + 1);
+    }
+  }
+
+  for (let i = 0; i < letters.length; i += 1) {
+    const entry = letters[i];
+    if (!entry || entry.status === 'correct') continue;
+    const count = remaining.get(entry.letter) ?? 0;
+    if (count > 0) {
+      letters[i] = { letter: entry.letter, status: 'present' };
+      remaining.set(entry.letter, count - 1);
+    }
+  }
+
+  return letters;
+}
+
+function buildAttempts(state: StoredGameState, today: DailyConcept): GameAttempt[] {
+  return state.attempts.map((word) => ({
+    word,
+    letters: evaluateGuess(word, today.concept),
+  }));
+}
+
 function toResponse(state: StoredGameState, today: DailyConcept): GameResponse {
   return {
     success: true,
     category: today.category,
     hint: today.hint,
-    attempts: state.attempts,
+    attempts: buildAttempts(state, today),
     gameStatus: state.gameStatus,
     concept: state.gameStatus !== 'PLAYING' ? today.concept : null,
     gamesPlayed: state.gamesPlayed,
@@ -91,7 +132,7 @@ function errorResponse(
     success: false,
     category: today.category,
     hint: today.hint,
-    attempts: state.attempts,
+    attempts: buildAttempts(state, today),
     gameStatus: 'PLAYING',
     concept: null,
     gamesPlayed: state.gamesPlayed,
@@ -172,6 +213,9 @@ async function handleGameRequest(c: Context) {
       if (!guess) {
         return c.json<GameResponse>(errorResponse('Escribe un concepto para enviar tu intento.', gameState, today));
       }
+      if (guess.length !== today.concept.length) {
+        return c.json<GameResponse>(errorResponse(`El concepto oculto tiene ${today.concept.length} letras.`, gameState, today));
+      }
       if (gameState.gameStatus !== 'PLAYING') {
         return c.json<GameResponse>(errorResponse('Esta partida ya terminó. Empieza una nueva.', gameState, today));
       }
@@ -205,12 +249,32 @@ async function handleGameRequest(c: Context) {
         return c.json<GameResponse>(errorResponse('No puedes pedir más letras en esta partida.', gameState, today));
       }
 
-      // La pista ya muestra la inicial (índice 0); se revela otra posición al azar
+      // La pista ya muestra la inicial (índice 0). Se revela una posición que el
+      // jugador aún no ha resuelto: prioriza letras ausentes o presentes fuera de
+      // su lugar, es decir, posiciones donde ningún intento acertó la letra correcta.
       const alreadyRevealed = new Set(gameState.revealedLetters.map((r) => r.index));
-      const candidates: number[] = [];
+      const solvedPositions = new Set<number>();
+      for (const attempt of gameState.attempts) {
+        for (let i = 1; i < today.concept.length; i += 1) {
+          if (attempt[i] === today.concept[i]) {
+            solvedPositions.add(i);
+          }
+        }
+      }
+
+      const unresolved: number[] = [];
       for (let i = 1; i < today.concept.length; i += 1) {
-        if (!alreadyRevealed.has(i)) {
-          candidates.push(i);
+        if (!alreadyRevealed.has(i) && !solvedPositions.has(i)) {
+          unresolved.push(i);
+        }
+      }
+      let candidates = unresolved;
+      if (candidates.length === 0) {
+        candidates = [];
+        for (let i = 1; i < today.concept.length; i += 1) {
+          if (!alreadyRevealed.has(i)) {
+            candidates.push(i);
+          }
         }
       }
       if (candidates.length === 0) {
