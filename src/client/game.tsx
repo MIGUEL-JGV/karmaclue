@@ -15,7 +15,8 @@ const GAME_CSS = `
   }
   @keyframes kcl-flipIn {
     0% { transform: rotateX(90deg); opacity: 0.4; }
-    100% { transform: rotateX(0deg); opacity: 1; }
+    60% { transform: rotateX(-10deg) scale(1.08, 0.94); opacity: 1; }
+    100% { transform: rotateX(0deg) scale(1, 1); opacity: 1; }
   }
   @keyframes kcl-shake {
     0%, 100% { transform: translateX(0); }
@@ -75,6 +76,153 @@ const GAME_CSS = `
     pointer-events: none;
     animation: kcl-fall 3s ease-in forwards;
   }
+
+  /* --- Sistema cartoon: mascota 🦊 + bocadillos + efectos cómicos --- */
+  @keyframes kcl-fox-idle {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-4px) scale(1.03); }
+  }
+  @keyframes kcl-fox-jump {
+    0% { transform: translateY(0) scale(1, 1); }
+    15% { transform: translateY(0) scale(1.08, 0.92); }
+    40% { transform: translateY(-26px) scale(0.94, 1.08); }
+    60% { transform: translateY(0) scale(1.06, 0.94); }
+    75% { transform: translateY(-3px) scale(0.98, 1.02); }
+    100% { transform: translateY(0) scale(1, 1); }
+  }
+  @keyframes kcl-fox-tremble {
+    0%, 100% { transform: rotate(0deg); }
+    20% { transform: rotate(-6deg); }
+    40% { transform: rotate(6deg); }
+    60% { transform: rotate(-4deg); }
+    80% { transform: rotate(4deg); }
+  }
+  @keyframes kcl-fox-wobble {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-8deg); }
+    75% { transform: rotate(8deg); }
+  }
+  @keyframes kcl-bubble-pop {
+    0% { transform: scale(0.2); opacity: 0; }
+    70% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes kcl-dots {
+    0%, 100% { opacity: 0.2; transform: translateY(0); }
+    50% { opacity: 1; transform: translateY(-3px); }
+  }
+  @keyframes kcl-stars-spin {
+    0% { transform: rotate(0deg) scale(0.5); opacity: 0; }
+    40% { opacity: 1; }
+    100% { transform: rotate(360deg) scale(1.4); opacity: 0; }
+  }
+  @keyframes kcl-tear {
+    0% { transform: translateY(0) scale(0.6); opacity: 0; }
+    30% { opacity: 1; }
+    100% { transform: translateY(16px) rotate(30deg) scale(1.1); opacity: 0; }
+  }
+  @keyframes kcl-burst-pop {
+    0% { transform: scale(0.3) rotate(-12deg); opacity: 0; }
+    35% { transform: scale(1.3) rotate(6deg); opacity: 1; }
+    70% { transform: scale(1) rotate(0deg); opacity: 1; }
+    100% { transform: scale(1.4) rotate(8deg); opacity: 0; }
+  }
+  @keyframes kcl-dance {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    20% { transform: translateY(-8px) rotate(-6deg); }
+    40% { transform: translateY(0) rotate(0deg); }
+    60% { transform: translateY(-6px) rotate(6deg); }
+    80% { transform: translateY(0) rotate(0deg); }
+  }
+  .kcl-fox { position: fixed; bottom: 14px; left: 14px; z-index: 25; pointer-events: none; }
+  .kcl-fox-body {
+    font-size: 56px;
+    line-height: 1;
+    animation: kcl-fox-idle 3.2s ease-in-out infinite;
+    transform-origin: 50% 85%;
+  }
+  .kcl-fox-body--jump { animation: kcl-fox-jump 0.9s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .kcl-fox-body--party { animation: kcl-fox-jump 0.9s ease-in-out infinite; }
+  .kcl-fox-body--tremble { animation: kcl-fox-tremble 0.45s ease-in-out; }
+  .kcl-fox-body--wobble { animation: kcl-fox-wobble 0.6s ease-in-out infinite; }
+  .kcl-fox-ground {
+    width: 44px;
+    height: 8px;
+    margin: -2px auto 0;
+    background: radial-gradient(ellipse, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0) 70%);
+    border-radius: 50%;
+  }
+  .kcl-fox-bubble {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 0;
+    background: #ffffff;
+    border: 2px solid #1a1a1b;
+    border-radius: 12px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #1a1a1b;
+    box-shadow: 2px 2px 0 rgba(26, 26, 27, 0.2);
+    animation: kcl-bubble-pop 0.35s ease-out both;
+    white-space: nowrap;
+  }
+  .kcl-fox-bubble::after {
+    content: '';
+    position: absolute;
+    left: 18px;
+    top: 100%;
+    border: 7px solid transparent;
+    border-top-color: #ffffff;
+  }
+  .kcl-fox-bubble::before {
+    content: '';
+    position: absolute;
+    left: 16px;
+    top: 100%;
+    border: 8px solid transparent;
+    border-top-color: #1a1a1b;
+  }
+  .kcl-fox-stars {
+    position: absolute;
+    inset: -8px;
+    font-size: 18px;
+    animation: kcl-stars-spin 1s ease-out forwards;
+    pointer-events: none;
+  }
+  .kcl-fox-tears {
+    position: absolute;
+    left: 12px;
+    top: 55%;
+    font-size: 18px;
+    animation: kcl-tear 0.9s ease-in infinite;
+    pointer-events: none;
+  }
+  .kcl-dots span {
+    display: inline-block;
+    animation: kcl-dots 1s ease-in-out infinite;
+    padding: 0 1px;
+  }
+  .kcl-burst-pop {
+    position: fixed;
+    z-index: 24;
+    pointer-events: none;
+    font-weight: bold;
+    font-size: 16px;
+    color: #ff4500;
+    text-shadow: 1px 1px 0 #ffffff;
+    animation: kcl-burst-pop 1.1s ease-out forwards;
+    white-space: nowrap;
+  }
+  .kcl-dance-letter {
+    display: inline-block;
+    animation: kcl-dance 0.7s ease-in-out infinite;
+  }
+  .kcl-btn {
+    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .kcl-btn:hover:not(:disabled) { transform: scale(1.05); }
+  .kcl-btn:active:not(:disabled) { transform: scale(0.93); }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation: none !important;
@@ -119,6 +267,75 @@ const CONFETTI: ConfettiPiece[] = Array.from({ length: 20 }, (_, i) => ({
   emoji: ['🎉', '🎊', '✨', '⭐', '🟩'][i % 5] ?? '🎉',
   fontSize: 14 + seeded(i + 120) * 14,
 }));
+
+// --- Sistema cartoon: mascota reactiva 🦊 ---
+type FoxMood =
+  | 'idle'
+  | 'thinking'
+  | 'happy'
+  | 'surprised'
+  | 'tease'
+  | 'mad'
+  | 'sparkle'
+  | 'party'
+  | 'cry';
+
+type FoxLook = {
+  bodyClass: string;
+  bubble: string | null;
+  extra?: 'stars' | 'tears';
+};
+
+const FOX_LOOKS: Record<FoxMood, FoxLook> = {
+  idle: { bodyClass: 'kcl-fox-body', bubble: null },
+  thinking: { bodyClass: 'kcl-fox-body', bubble: '···' },
+  happy: { bodyClass: 'kcl-fox-body--jump', bubble: '¡Genial!' },
+  surprised: { bodyClass: 'kcl-fox-body--tremble', bubble: '¿¿Cómo??' },
+  tease: { bodyClass: 'kcl-fox-body--wobble', bubble: '¡Casi!' },
+  mad: { bodyClass: 'kcl-fox-body--tremble', bubble: '¡Jsjs!' },
+  sparkle: { bodyClass: 'kcl-fox-body--jump', bubble: '✨ ¡Toma!', extra: 'stars' },
+  party: { bodyClass: 'kcl-fox-body--party', bubble: '¡¡WAZA!!' },
+  cry: { bodyClass: 'kcl-fox-body--wobble', bubble: '¡Oh no!', extra: 'tears' },
+};
+
+type Burst = {
+  id: number;
+  top: number;
+  left: number;
+  text: string;
+};
+
+// Puntos suspensivos ondulantes para el estado "pensando"
+function ThinkingDots() {
+  return (
+    <span className="kcl-dots" aria-hidden="true">
+      <span>·</span>
+      <span>·</span>
+      <span>·</span>
+    </span>
+  );
+}
+
+function FoxMascot({ mood, foxKey }: { mood: FoxMood; foxKey: number }) {
+  const look = FOX_LOOKS[mood];
+  return (
+    <div key={foxKey} className="kcl-fox" aria-hidden="true">
+      {look.bubble && (
+        <div className="kcl-fox-bubble">
+          {mood === 'thinking' ? <ThinkingDots /> : look.bubble}
+        </div>
+      )}
+      <div className={look.bodyClass}>
+        <span style={{ position: 'relative', display: 'inline-block' }}>
+          {look.extra === 'stars' && <div className="kcl-fox-stars">✨</div>}
+          {look.extra === 'tears' && <div className="kcl-fox-tears">💧</div>}
+          🦊
+        </span>
+      </div>
+      <div className="kcl-fox-ground" />
+    </div>
+  );
+}
 
 // La comunicación usa fetch relativo a /api, que en Devvit Web el runtime de Reddit
 // redirige automáticamente hacia el servidor serverless local (Hono) con el token de auth.
@@ -172,8 +389,62 @@ export function KarmaClueGame() {
   const [gamesPlayed, setGamesPlayed] = useState(1);
   const [revealedLetters, setRevealedLetters] = useState<RevealedLetter[]>([]);
   const [maxReveals, setMaxReveals] = useState(1);
+  const [foxMood, setFoxMood] = useState<FoxMood>('idle');
+  const [foxKey, setFoxKey] = useState(0);
+  const [bursts, setBursts] = useState<Burst[]>([]);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const burstSeqRef = useRef(0);
+
+  // Cambia el humor del zorro y re-lanza su animación
+  const setFox = (mood: FoxMood) => {
+    setFoxMood(mood);
+    setFoxKey((k) => k + 1);
+  };
+
+  // Añade un bocadillo cómico flotante (posiciones deterministas, sin Math.random)
+  const addBurst = (text: string) => {
+    burstSeqRef.current += 1;
+    const id = burstSeqRef.current;
+    setBursts((bs) => [
+      ...bs,
+      { id, top: 12 + seeded(id) * 55, left: 4 + seeded(id + 13) * 75, text },
+    ]);
+  };
+
+  // La mascota vuelve a su estado de reposo al cabo de unos segundos
+  useEffect(() => {
+    if (foxMood === 'idle') return;
+    const t = setTimeout(() => setFoxMood('idle'), 3200);
+    return () => clearTimeout(t);
+  }, [foxMood]);
+
+  // Deriva el humor del resultado de un intento
+  const reactToResponse = (res: GameResponse) => {
+    if (res.gameStatus === 'WON') {
+      setFox('party');
+      addBurst('¡GANASTE!');
+      return;
+    }
+    if (res.gameStatus === 'LOST') {
+      setFox('cry');
+      addBurst('¡OH NO!');
+      return;
+    }
+    const last = res.attempts[res.attempts.length - 1];
+    const hasCorrect = last?.letters.some((l) => l.status === 'correct') ?? false;
+    const hasPresent = last?.letters.some((l) => l.status === 'present') ?? false;
+    if (hasCorrect && !hasPresent) {
+      setFox('happy');
+      addBurst('¡BIEN!');
+    } else if (hasPresent) {
+      setFox('surprised');
+      addBurst('¡CASI!');
+    } else {
+      setFox('tease');
+      addBurst('¡NOP!');
+    }
+  };
 
   // Ordinal abreviado para mostrar la posición de una letra revelada (1ª, 4ª...)
   const ordinal = (n: number) => `${n}ª`;
@@ -208,6 +479,8 @@ export function KarmaClueGame() {
         setRevealedLetters(res.revealedLetters);
         setMaxReveals(res.maxReveals);
         if (res.concept) setSecretConcept(res.concept);
+        if (res.gameStatus === 'WON') setFox('party');
+        if (res.gameStatus === 'LOST') setFox('cry');
       } else {
         showError(res.message ?? 'Error al obtener datos del juego.');
       }
@@ -248,9 +521,12 @@ export function KarmaClueGame() {
       setMaxReveals(res.maxReveals);
       if (res.concept) setSecretConcept(res.concept);
       setInputValue('');
+      reactToResponse(res);
     } else {
       setShaking(true);
       inputRef.current?.focus();
+      setFox('mad');
+      addBurst('¡JSJS!');
       showError(res.message ?? 'Error al validar el concepto.');
     }
   };
@@ -273,6 +549,8 @@ export function KarmaClueGame() {
       setMaxReveals(res.maxReveals);
       setSecretConcept(null);
       setInputValue('');
+      setFox('thinking');
+      addBurst('¡NUEVA PARTIDA!');
     } else {
       showError(res.message ?? 'Error al iniciar una nueva partida.');
     }
@@ -289,6 +567,8 @@ export function KarmaClueGame() {
     if (res.success) {
       setRevealedLetters(res.revealedLetters);
       setMaxReveals(res.maxReveals);
+      setFox('sparkle');
+      addBurst('✨ ¡Toma!');
     } else {
       showError(res.message ?? 'Error al pedir la letra.');
     }
@@ -320,6 +600,21 @@ export function KarmaClueGame() {
             {c.emoji}
           </span>
         ))}
+
+      {/* Bocadillos cómicos flotantes */}
+      {bursts.map((b) => (
+        <span
+          key={b.id}
+          className="kcl-burst-pop"
+          onAnimationEnd={() => setBursts((bs) => bs.filter((x) => x.id !== b.id))}
+          style={{ top: `${b.top}%`, left: `${b.left}%` }}
+        >
+          {b.text}
+        </span>
+      ))}
+
+      {/* Mascota caricatura reactiva */}
+      <FoxMascot mood={foxMood} foxKey={foxKey} />
 
       {/* Encabezado */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #EDEFF1', paddingBottom: '10px' }}>
@@ -361,7 +656,7 @@ export function KarmaClueGame() {
           type="button"
           onClick={handleReveal}
           disabled={!canReveal}
-          className={canReveal ? 'kcl-pulse' : ''}
+          className={canReveal ? 'kcl-pulse kcl-btn' : 'kcl-btn'}
           style={{ backgroundColor: '#FFB000', color: '#1A1A1B', border: 'none', padding: '6px 12px', borderRadius: '16px', fontWeight: 'bold', cursor: 'pointer', fontSize: '12px', whiteSpace: 'nowrap', opacity: canReveal ? 1 : 0.6 }}
         >
           {submitting && canReveal ? <span className="kcl-spinner" /> : null}
@@ -467,6 +762,7 @@ export function KarmaClueGame() {
           <button
             type="submit"
             disabled={submitting}
+            className="kcl-btn"
             style={{ backgroundColor: '#0079D3', color: '#FFF', border: 'none', padding: '0 16px', borderRadius: '20px', fontWeight: 'bold', cursor: 'pointer', fontSize: '13px', opacity: submitting ? 0.7 : 1 }}
           >
             {submitting ? <span className="kcl-spinner" /> : null}
@@ -478,11 +774,30 @@ export function KarmaClueGame() {
           <h3 style={{ color: gameStatus === 'WON' ? '#46D160' : '#EA0027', margin: '0 0 6px 0', fontSize: '16px' }}>
             {gameStatus === 'WON' ? '🎉 ¡Ganaste!' : '💀 Fin del juego'}
           </h3>
-          <p style={{ margin: '0 0 10px 0', fontSize: '13px' }}>El concepto era: <strong style={{ color: '#0079D3' }}>{secretConcept}</strong></p>
+          <p style={{ margin: '0 0 10px 0', fontSize: '13px' }}>
+            El concepto era:{' '}
+            {gameStatus === 'WON' && secretConcept ? (
+              <span>
+                👑{' '}
+                {secretConcept.split('').map((ch, i) => (
+                  <span
+                    key={i}
+                    className="kcl-dance-letter"
+                    style={{ animationDelay: `${i * 0.09}s`, color: '#46D160', fontWeight: 'bold', fontSize: '18px' }}
+                  >
+                    {ch}
+                  </span>
+                ))}
+              </span>
+            ) : (
+              <strong style={{ color: '#0079D3' }}>{secretConcept}</strong>
+            )}
+          </p>
           <button
             type="button"
             onClick={handleNewGame}
             disabled={submitting}
+            className="kcl-btn"
             style={{ backgroundColor: '#0079D3', color: '#FFF', border: 'none', padding: '10px 20px', borderRadius: '20px', fontWeight: 'bold', cursor: 'pointer', fontSize: '14px', opacity: submitting ? 0.7 : 1 }}
           >
             {submitting ? <span className="kcl-spinner" /> : null}
